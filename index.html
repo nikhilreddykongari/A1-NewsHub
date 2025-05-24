@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI News Hub</title>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EXAMPLE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-EXAMPLE');
+    </script>
+    <!-- Replace G-EXAMPLE with your actual Google Analytics ID when you have one -->
     <style>
         * {
             margin: 0;
@@ -790,7 +799,7 @@
 <body>
     <div class="video-background">
         <video autoplay muted loop playsinline>
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-futuristic-devices-99786-large.mp4" type="video/mp4">
+            <source src="https://cdn.pixabay.com/vimeo/328218457/abstract-27269.mp4?width=1280&hash=c6e0e1c2e4d8c0c5c2e4d8c0c5c2e4d8c0c5c2e4" type="video/mp4">
         </video>
     </div>
 
@@ -801,7 +810,7 @@
             <div class="update-info">
                 <span>Last updated: <span id="last-updated"></span></span>
                 <span class="countdown-container">Next refresh in: <span id="refresh-countdown">5:00</span></span>
-                <button id="update-button" onclick="checkForUpdates()" title="Check for new content">
+                <button id="update-button" onclick="createNewsCards(); updateLastUpdatedTime();" title="Check for new content">
                     <svg viewBox="0 0 24 24" width="20" height="20">
                         <path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
                     </svg>
@@ -843,10 +852,54 @@
             </div>
         </section>
     </main>
+    
+    <!-- Social sharing styles -->
+    <style>
+        .social-share {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .share-btn.twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+        
+        .share-btn.facebook {
+            background: #4267B2;
+            color: white;
+        }
+        
+        .share-btn.email {
+            background: #EA4335;
+            color: white;
+        }
+        
+        .share-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+    </style>
 
     <footer>
         <p>&copy; 2024 AI News Hub. All rights reserved.</p>
     </footer>
+    
+    <!-- Load the JavaScript file -->
+    <script src="script.js"></script>
 
     <script>
         // Function to format date
