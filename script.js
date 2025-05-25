@@ -162,9 +162,13 @@ function createNewsCard(article, index) {
     // Handle differences between NewsAPI format and our sample data format
     const imageUrl = article.urlToImage || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
     const sourceName = article.source?.name || article.source || 'Unknown Source';
+    const articleUrl = article.url || "#";
     
     // Create freshness badge with relative time
     const freshnessBadge = `<span class="freshness-badge">${formatDate(article.publishedAt)}</span>`;
+    
+    // Generate summary content
+    const summaryContent = generateSummaryContent(article);
     
     return `
         <article class="card">
@@ -181,7 +185,102 @@ function createNewsCard(article, index) {
                 
                 <div id="expanded-${index}" class="expanded-content">
                     <div class="full-article">
-                        <div class="content-tabs">
+                        <div class="article-summary">
+                            ${summaryContent}
+                            <div class="read-source">
+                                <p>Read the full article from the original source:</p>
+                                <a href="${articleUrl}" target="_blank" class="source-button">Read at ${sourceName}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <small>Published: ${formatDate(article.publishedAt)}</small>
+                    <button onclick="toggleArticle(${index})">Read Summary</button>
+                </div>
+            </div>
+        </article>
+    `;
+}
+
+// Function to generate a summary for an article
+function generateSummaryContent(article) {
+    const category = article.category || 'news';
+    
+    // Create a more detailed summary based on the article category
+    let summary = '';
+    
+    switch(category) {
+        case 'news':
+            summary = `
+                <p>This news article from ${article.source?.name || 'a reputable source'} covers recent developments in artificial intelligence.</p>
+                <p>${article.description}</p>
+                <p>Key points from this article:</p>
+                <ul>
+                    <li>Latest AI developments and their potential impact</li>
+                    <li>Industry reactions and expert opinions</li>
+                    <li>Implications for technology and society</li>
+                </ul>
+            `;
+            break;
+        case 'research':
+            summary = `
+                <p>This research article highlights recent breakthroughs in AI technology and methodology.</p>
+                <p>${article.description}</p>
+                <p>Research highlights:</p>
+                <ul>
+                    <li>Novel approaches and methodologies</li>
+                    <li>Performance improvements and benchmarks</li>
+                    <li>Potential applications and future directions</li>
+                </ul>
+            `;
+            break;
+        case 'business':
+            summary = `
+                <p>This business article examines AI's impact on markets, investments, and corporate strategy.</p>
+                <p>${article.description}</p>
+                <p>Business implications:</p>
+                <ul>
+                    <li>Market trends and investment opportunities</li>
+                    <li>Corporate strategies and partnerships</li>
+                    <li>Economic impact and industry transformation</li>
+                </ul>
+            `;
+            break;
+        case 'industry':
+            summary = `
+                <p>This industry article explores practical applications of AI across various sectors.</p>
+                <p>${article.description}</p>
+                <p>Industry applications:</p>
+                <ul>
+                    <li>Sector-specific implementations and use cases</li>
+                    <li>Efficiency gains and operational improvements</li>
+                    <li>Challenges and adoption strategies</li>
+                </ul>
+            `;
+            break;
+        case 'trending':
+            summary = `
+                <p>This trending topic is currently generating significant discussion in the AI community.</p>
+                <p>${article.description}</p>
+                <p>Why it's trending:</p>
+                <ul>
+                    <li>Social media engagement and public interest</li>
+                    <li>Expert opinions and diverse perspectives</li>
+                    <li>Potential impact on AI development and policy</li>
+                </ul>
+            `;
+            break;
+        default:
+            summary = `
+                <p>${article.description}</p>
+                <p>This article provides valuable insights into artificial intelligence developments and their implications.</p>
+            `;
+    }
+    
+    return summary;
+}
                             <div class="tab-buttons">
                                 <button class="tab-btn active" onclick="showTab(${index}, 'fulltext')">Full Article</button>
                                 ${article.videoId ? `<button class="tab-btn" onclick="showTab(${index}, 'video')">Video</button>` : ''}

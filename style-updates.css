@@ -1,0 +1,64 @@
+/* Additional styles for article summary and source button */
+.article-summary {
+    padding: 1.5rem;
+    background: rgba(10, 10, 15, 0.6);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.article-summary p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.article-summary ul {
+    margin-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.article-summary li {
+    margin-bottom: 0.5rem;
+}
+
+.read-source {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.source-button {
+    display: inline-block;
+    background: #6366f1;
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.source-button:hover {
+    background: #4f46e5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Update card footer button text */
+.card-footer button {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.card-footer button:hover {
+    background: #4f46e5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
