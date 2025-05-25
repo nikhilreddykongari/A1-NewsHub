@@ -477,9 +477,10 @@ function createNewsCard(article, index) {
                 </div>
                 
                 <div class="card-footer">
-                    <small>Published: ${formatDate(article.publishedAt)}</small>
-                    <button onclick="toggleArticle(${index})">Read More</button>
+                   <small>Published: ${formatDate(article.publishedAt)}</small>
+                   <button id="btn-${index}" onclick="toggleArticle(${index})">Read More</button>
                 </div>
+
             </div>
         </article>
     `;
@@ -532,8 +533,18 @@ let currentNewsData = [];
 // Function to toggle article expansion
 function toggleArticle(id) {
     const expandedContent = document.getElementById(`expanded-${id}`);
+    const button = document.querySelector(`#btn-${id}`);
+    
     expandedContent.classList.toggle('active');
+    
+    // Update button text based on expanded state
+    if (expandedContent.classList.contains('active')) {
+        button.textContent = 'Read Less';
+    } else {
+        button.textContent = 'Read More';
+    }
 }
+
 
 // Function to filter content by category
 async function filterContent(category) {
