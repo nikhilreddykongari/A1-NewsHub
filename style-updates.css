@@ -198,3 +198,18 @@
     margin-bottom: 1rem;
     color: #eee;
 }
+.article-date {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.article-lead {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.article-summary h3 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
