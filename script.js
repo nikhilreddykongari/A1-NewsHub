@@ -51,9 +51,120 @@ const sampleAiNewsData = [
     }
 ];
 
-// Function to fetch news from NewsAPI
-async function fetchNews(category = 'ai') {
+// Sample data for different categories
+const categoryData = {
+    news: [
+        {
+            title: "OpenAI Releases New AI Model with Enhanced Capabilities",
+            description: "The latest model shows significant improvements in reasoning and problem-solving abilities.",
+            category: "news",
+            source: { name: "Tech News Today" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1677442135136-760c813029fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        },
+        {
+            title: "AI Regulation Framework Announced by Government Coalition",
+            description: "New guidelines aim to ensure responsible AI development while fostering innovation.",
+            category: "news",
+            source: { name: "Policy Watch" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        }
+    ],
+    research: [
+        {
+            title: "Breakthrough in Neural Network Efficiency Reduces Model Size by 90%",
+            description: "Researchers develop new technique that maintains accuracy while dramatically reducing computational requirements.",
+            category: "research",
+            source: { name: "AI Research Journal" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        },
+        {
+            title: "Quantum Computing Accelerates Drug Discovery Process",
+            description: "New algorithms enable pharmaceutical researchers to identify promising compounds in a fraction of the time.",
+            category: "research",
+            source: { name: "Quantum Computing Today" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        }
+    ],
+    business: [
+        {
+            title: "AI Startups Raise Record $50 Billion in First Half of 2024",
+            description: "Venture capital funding continues to flow into AI companies despite broader market fluctuations.",
+            category: "business",
+            source: { name: "Business Insider" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        },
+        {
+            title: "Major Tech Companies Form AI Alliance for Standardization",
+            description: "Collaboration aims to establish common protocols and safety standards across the industry.",
+            category: "business",
+            source: { name: "Tech Business Report" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1591696205602-2f950c417cb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        }
+    ],
+    industry: [
+        {
+            title: "Manufacturing Sector Reports 60% Efficiency Gains with AI Implementation",
+            description: "Smart factories using computer vision and predictive maintenance see dramatic improvements in output.",
+            category: "industry",
+            source: { name: "Industry Tech" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        },
+        {
+            title: "Healthcare AI Systems Now Deployed in Over 5,000 Hospitals",
+            description: "Medical imaging diagnostics and clinical decision support systems achieve widespread adoption.",
+            category: "industry",
+            source: { name: "Healthcare Technology" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        }
+    ],
+    trending: [
+        {
+            title: "#AIEthics Trending as Industry Leaders Call for Responsible Development",
+            description: "Discussions about ethical AI guidelines gain traction following recent industry announcements.",
+            category: "trending",
+            source: { name: "Social Media Watch" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        },
+        {
+            title: "#MachineLearning Discussions Spike After Major Research Publication",
+            description: "Tech community buzzes about the latest neural network efficiency techniques from leading AI labs.",
+            category: "trending",
+            source: { name: "Tech Trends" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "#"
+        }
+    ]
+};
+
+// Function to fetch news from NewsAPI or use category-specific sample data
+async function fetchNews(category = 'news') {
     try {
+        // For GitHub Pages deployment, use category-specific sample data
+        if (window.location.hostname.includes('github.io')) {
+            console.log('Using sample data for GitHub Pages deployment');
+            return categoryData[category] || categoryData.news;
+        }
+        
+        // For localhost development, try to use the actual API
         // Get current date and date from 30 days ago (NewsAPI free tier limitation)
         const today = new Date();
         const thirtyDaysAgo = new Date();
@@ -89,46 +200,23 @@ async function fetchNews(category = 'ai') {
             });
         } else {
             console.error('Error fetching news or no articles returned:', data);
-            // Update sample data with current dates
-            return updateSampleDataDates();
+            // Use category-specific sample data as fallback
+            return categoryData[category] || categoryData.news;
         }
     } catch (error) {
         console.error('Error fetching news:', error);
-        // Update sample data with current dates
-        return updateSampleDataDates();
+        // Use category-specific sample data as fallback
+        return categoryData[category] || categoryData.news;
     }
 }
 
 // Global variable to store current news data
 let currentNewsData = [];
 
-// Function to update sample data with current dates
+// Function to update sample data with current dates (for backward compatibility)
 function updateSampleDataDates() {
-    const now = new Date();
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const twoDaysAgo = new Date(now);
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-    const threeDaysAgo = new Date(now);
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-    
-    return sampleAiNewsData.map((article, index) => {
-        // Assign recent dates based on index
-        switch(index) {
-            case 0:
-                article.publishedAt = now.toISOString();
-                break;
-            case 1:
-                article.publishedAt = yesterday.toISOString();
-                break;
-            case 2:
-                article.publishedAt = twoDaysAgo.toISOString();
-                break;
-            default:
-                article.publishedAt = threeDaysAgo.toISOString();
-        }
-        return article;
-    });
+    // Now we use category-specific sample data instead
+    return categoryData.news;
 }
 
 // Function to format date
