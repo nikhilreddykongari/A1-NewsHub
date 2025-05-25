@@ -155,19 +155,38 @@ const categoryData = {
     ]
 };
 
-// Function to fetch news from NewsAPI or use category-specific sample data
+// Function to fetch news from pre-fetched data, API, or fallback to sample data
 async function fetchNews(category = 'news') {
     try {
-        // For GitHub Pages deployment, use category-specific sample data
+        // Try to load the pre-fetched news data if on GitHub Pages
         if (window.location.hostname.includes('github.io')) {
-            console.log('Using sample data for GitHub Pages deployment');
+            try {
+                // Fetch the news-data.js file
+                const response = await fetch('./news-data.js');
+                if (response.ok) {
+                    const text = await response.text();
+                    // Extract the JSON data from the JavaScript file
+                    const jsonStr = text.split('const newsData = ')[1].split('export default')[0].trim().replace(/;$/, '');
+                    const data = JSON.parse(jsonStr);
+                    
+                    // Use the data for the requested category
+                    if (data && data[category] && data[category].length > 0) {
+                        console.log(`Using pre-fetched ${category} news data`);
+                        return data[category];
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading pre-fetched news data:', err);
+            }
+            
+            // If pre-fetched data failed, use category-specific sample data
+            console.log(`Falling back to sample data for ${category}`);
             return categoryData[category] || categoryData.news;
         }
         
-        // For localhost development, try to use the actual API
-        // Get current date and date from 30 days ago (NewsAPI free tier limitation)
+        // For localhost development, use the actual API
         const today = new Date();
-        const thirtyDaysAgo = new Date();
+        const thirtyDaysAgo = new Date(););
         thirtyDaysAgo.setDate(today.getDate() - 30);
         
         // Format dates for API
@@ -217,6 +236,27 @@ let currentNewsData = [];
 function updateSampleDataDates() {
     // Now we use category-specific sample data instead
     return categoryData.news;
+}
+
+// Function to check for and load pre-fetched news data
+async function loadPreFetchedNewsData(category) {
+    try {
+        const response = await fetch('./news-data.js');
+        if (!response.ok) return null;
+        
+        const text = await response.text();
+        // Extract the JSON data from the JavaScript file
+        const jsonStr = text.split('const newsData = ')[1].split('export default')[0].trim().replace(/;$/, '');
+        const data = JSON.parse(jsonStr);
+        
+        if (data && data[category] && data[category].length > 0) {
+            return data[category];
+        }
+        return null;
+    } catch (err) {
+        console.error('Error loading pre-fetched news data:', err);
+        return null;
+    }
 }
 
 // Function to format date
