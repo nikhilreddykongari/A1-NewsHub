@@ -369,12 +369,12 @@ async function createNewsCards(category = 'news') {
     }
 }
 
- // Function to create a single news card
+// Function to create a single news card
+// Function to create a single news card
 function createNewsCard(article, index) {
     // Handle differences between NewsAPI format and our sample data format
     const imageUrl = article.urlToImage || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
     const sourceName = article.source?.name || article.source || 'Unknown Source';
-    const articleUrl = article.url || "#";
     
     // Create freshness badge with relative time
     const freshnessBadge = `<span class="freshness-badge">${formatDate(article.publishedAt)}</span>`;
@@ -429,7 +429,6 @@ function createNewsCard(article, index) {
         </article>
     `;
 }
-
 
 // Function to format date
 function formatDate(dateString) {
