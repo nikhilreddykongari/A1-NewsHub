@@ -1,3 +1,119 @@
+// NewsAPI configuration
+const NEWS_API_KEY = '05b556a20afa40b7947c78b4bc787a7b';
+const NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything';
+
+// Default image URLs for articles without images
+const DEFAULT_IMAGES = [
+    "https://images.unsplash.com/photo-1677442135136-760c813029fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+];
+
+// Sample data for different categories
+const categoryData = {
+    news: [
+        {
+            title: "OpenAI Releases New AI Model with Enhanced Capabilities",
+            description: "The latest model shows significant improvements in reasoning and problem-solving abilities.",
+            category: "news",
+            source: { name: "Tech News Today" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1677442135136-760c813029fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://technewstoday.com/openai-new-model"
+        },
+        {
+            title: "AI Regulation Framework Announced by Government Coalition",
+            description: "New guidelines aim to ensure responsible AI development while fostering innovation.",
+            category: "news",
+            source: { name: "Policy Watch" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://policywatch.org/ai-regulation-framework"
+        }
+    ],
+    research: [
+        {
+            title: "Breakthrough in Neural Network Efficiency Reduces Model Size by 90%",
+            description: "Researchers develop new technique that maintains accuracy while dramatically reducing computational requirements.",
+            category: "research",
+            source: { name: "AI Research Journal" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://airesearchjournal.org/neural-efficiency"
+        },
+        {
+            title: "Quantum Computing Accelerates Drug Discovery Process",
+            description: "New algorithms enable pharmaceutical researchers to identify promising compounds in a fraction of the time.",
+            category: "research",
+            source: { name: "Quantum Computing Today" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://quantumcomputing.today/drug-discovery"
+        }
+    ],
+    business: [
+        {
+            title: "AI Startups Raise Record $50 Billion in First Half of 2024",
+            description: "Venture capital funding continues to flow into AI companies despite broader market fluctuations.",
+            category: "business",
+            source: { name: "Business Insider" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://businessinsider.com/ai-startup-funding"
+        },
+        {
+            title: "Major Tech Companies Form AI Alliance for Standardization",
+            description: "Collaboration aims to establish common protocols and safety standards across the industry.",
+            category: "business",
+            source: { name: "Tech Business Report" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1591696205602-2f950c417cb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://techbusinessreport.com/ai-alliance"
+        }
+    ],
+    industry: [
+        {
+            title: "Manufacturing Sector Reports 60% Efficiency Gains with AI Implementation",
+            description: "Smart factories using computer vision and predictive maintenance see dramatic improvements in output.",
+            category: "industry",
+            source: { name: "Industry Tech" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://industrytech.com/ai-efficiency-gains"
+        },
+        {
+            title: "Healthcare AI Systems Now Deployed in Over 5,000 Hospitals",
+            description: "Medical imaging diagnostics and clinical decision support systems achieve widespread adoption.",
+            category: "industry",
+            source: { name: "Healthcare Technology" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://healthcaretech.org/ai-hospital-deployment"
+        }
+    ],
+    trending: [
+        {
+            title: "#AIEthics Trending as Industry Leaders Call for Responsible Development",
+            description: "Discussions about ethical AI guidelines gain traction following recent industry announcements.",
+            category: "trending",
+            source: { name: "Social Media Watch" },
+            publishedAt: new Date().toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://socialmediawatch.com/ai-ethics-trending"
+        },
+        {
+            title: "#MachineLearning Discussions Spike After Major Research Publication",
+            description: "Tech community buzzes about the latest neural network efficiency techniques from leading AI labs.",
+            category: "trending",
+            source: { name: "Tech Trends" },
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+            urlToImage: "https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            url: "https://techtrends.com/machine-learning-spike"
+        }
+    ]
+};
+
 // Function to get X (Twitter) posts for an article
 function getXPostsForArticle(article) {
     // Mock X posts based on article topic
@@ -215,121 +331,6 @@ function generateSummaryContent(article) {
     
     return summary;
 }
-// NewsAPI configuration
-const NEWS_API_KEY = '05b556a20afa40b7947c78b4bc787a7b';
-const NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything';
-
-// Default image URLs for articles without images
-const DEFAULT_IMAGES = [
-    "https://images.unsplash.com/photo-1677442135136-760c813029fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-];
-
-// Sample data for different categories
-const categoryData = {
-    news: [
-        {
-            title: "OpenAI Releases New AI Model with Enhanced Capabilities",
-            description: "The latest model shows significant improvements in reasoning and problem-solving abilities.",
-            category: "news",
-            source: { name: "Tech News Today" },
-            publishedAt: new Date().toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1677442135136-760c813029fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://technewstoday.com/openai-new-model"
-        },
-        {
-            title: "AI Regulation Framework Announced by Government Coalition",
-            description: "New guidelines aim to ensure responsible AI development while fostering innovation.",
-            category: "news",
-            source: { name: "Policy Watch" },
-            publishedAt: new Date(Date.now() - 86400000).toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://policywatch.org/ai-regulation-framework"
-        }
-    ],
-    research: [
-        {
-            title: "Breakthrough in Neural Network Efficiency Reduces Model Size by 90%",
-            description: "Researchers develop new technique that maintains accuracy while dramatically reducing computational requirements.",
-            category: "research",
-            source: { name: "AI Research Journal" },
-            publishedAt: new Date().toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1507668077129-56e32842fceb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://airesearchjournal.org/neural-efficiency"
-        },
-        {
-            title: "Quantum Computing Accelerates Drug Discovery Process",
-            description: "New algorithms enable pharmaceutical researchers to identify promising compounds in a fraction of the time.",
-            category: "research",
-            source: { name: "Quantum Computing Today" },
-            publishedAt: new Date(Date.now() - 86400000).toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://quantumcomputing.today/drug-discovery"
-        }
-    ],
-    business: [
-        {
-            title: "AI Startups Raise Record $50 Billion in First Half of 2024",
-            description: "Venture capital funding continues to flow into AI companies despite broader market fluctuations.",
-            category: "business",
-            source: { name: "Business Insider" },
-            publishedAt: new Date().toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://businessinsider.com/ai-startup-funding"
-        },
-        {
-            title: "Major Tech Companies Form AI Alliance for Standardization",
-            description: "Collaboration aims to establish common protocols and safety standards across the industry.",
-            category: "business",
-            source: { name: "Tech Business Report" },
-            publishedAt: new Date(Date.now() - 86400000).toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1591696205602-2f950c417cb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://techbusinessreport.com/ai-alliance"
-        }
-    ],
-    industry: [
-        {
-            title: "Manufacturing Sector Reports 60% Efficiency Gains with AI Implementation",
-            description: "Smart factories using computer vision and predictive maintenance see dramatic improvements in output.",
-            category: "industry",
-            source: { name: "Industry Tech" },
-            publishedAt: new Date().toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://industrytech.com/ai-efficiency-gains"
-        },
-        {
-            title: "Healthcare AI Systems Now Deployed in Over 5,000 Hospitals",
-            description: "Medical imaging diagnostics and clinical decision support systems achieve widespread adoption.",
-            category: "industry",
-            source: { name: "Healthcare Technology" },
-            publishedAt: new Date(Date.now() - 86400000).toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://healthcaretech.org/ai-hospital-deployment"
-        }
-    ],
-    trending: [
-        {
-            title: "#AIEthics Trending as Industry Leaders Call for Responsible Development",
-            description: "Discussions about ethical AI guidelines gain traction following recent industry announcements.",
-            category: "trending",
-            source: { name: "Social Media Watch" },
-            publishedAt: new Date().toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://socialmediawatch.com/ai-ethics-trending"
-        },
-        {
-            title: "#MachineLearning Discussions Spike After Major Research Publication",
-            description: "Tech community buzzes about the latest neural network efficiency techniques from leading AI labs.",
-            category: "trending",
-            source: { name: "Tech Trends" },
-            publishedAt: new Date(Date.now() - 86400000).toISOString(),
-            urlToImage: "https://images.unsplash.com/photo-1639322537228-f710d846310a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-            url: "https://techtrends.com/machine-learning-spike"
-        }
-    ]
-};
 
 // Function to fetch news from pre-fetched data, API, or fallback to sample data
 async function fetchNews(category = 'news') {
