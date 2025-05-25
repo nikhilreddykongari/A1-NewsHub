@@ -1,6 +1,12 @@
-// NewsAPI configuration
-const NEWS_API_KEY = '05b556a20afa40b7947c78b4bc787a7b';
-const NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything';
+// Replace with X-focused configuration
+const X_TOPICS = {
+    news: ['#AINews', '#ArtificialIntelligence', '#AIUpdates'],
+    research: ['#AIResearch', '#MachineLearning', '#DeepLearning'],
+    business: ['#AIBusiness', '#TechInvestment', '#AIStartups'],
+    industry: ['#AIIndustry', '#IndustryAI', '#AIApplications'],
+    trending: ['#AITrending', '#TechTrends', '#AIFuture']
+};
+
 
 // Default image URLs for articles without images
 const DEFAULT_IMAGES = [
@@ -299,36 +305,88 @@ function getRandomLocation() {
 }
 
 
-// Function to fetch news from pre-fetched data, API, or fallback to sample data
+// Function to fetch news from X discussions
 async function fetchNews(category = 'news') {
-    try {
-        // Try to load the pre-fetched news data from news-data.js
-        try {
-            const response = await fetch('./news-data.js');
-            if (response.ok) {
-                const text = await response.text();
-                // Extract the JSON data from the JavaScript file
-                const jsonStr = text.split('const newsData = ')[1].split('export default')[0].trim().replace(/;$/, '');
-                const data = JSON.parse(jsonStr);
-                
-                // Use the data for the requested category
-                if (data && data[category] && data[category].length > 0) {
-                    console.log(`Using pre-fetched ${category} news data`);
-                    return data[category];
-                }
-            }
-        } catch (err) {
-            console.error('Error loading pre-fetched news data:', err);
-        }
-        
-        // If pre-fetched data failed, use category-specific sample data
-        console.log(`Falling back to sample data for ${category}`);
-        return categoryData[category] || categoryData.news;
-    } catch (error) {
-        console.error('Error fetching news:', error);
-        return categoryData[category] || categoryData.news;
-    }
+    // Get X posts for the selected category
+    const posts = generateXPostsForCategory(category);
+    return posts;
 }
+// Function to generate X posts for a category
+function generateXPostsForCategory(category) {
+    const topics = X_TOPICS[category] || X_TOPICS.news;
+    const posts = [];
+    
+    // Generate 5-8 posts for this category
+    const postCount = 5 + Math.floor(Math.random() * 4);
+    
+    for (let i = 0; i < postCount; i++) {
+        const topic = topics[i % topics.length];
+        posts.push(generateXPost(category, topic, i));
+    }
+    
+    return posts;
+}
+
+// Function to generate a single X post
+function generateXPost(category, topic, index) {
+    const userProfiles = [
+        { username: 'AI Research Lab', handle: '@AIResearchLab', verified: true, profileImg: 'https://pbs.twimg.com/profile_images/1634058036934500352/b4F1eVpJ_400x400.jpg' },
+        { username: 'Sarah Johnson, PhD', handle: '@DrSarahAI', verified: true, profileImg: 'https://randomuser.me/api/portraits/women/44.jpg' },
+        { username: 'Tech Insights', handle: '@TechInsights', verified: true, profileImg: 'https://randomuser.me/api/portraits/men/32.jpg' },
+        { username: 'AI Daily', handle: '@AIDailyNews', verified: true, profileImg: 'https://randomuser.me/api/portraits/men/45.jpg' },
+        { username: 'Future Tech Today', handle: '@FutureTechToday', verified: true, profileImg: 'https://randomuser.me/api/portraits/women/22.jpg' }
+    ];
+    
+    const user = userProfiles[index % userProfiles.length];
+    
+    // Generate post content based on category
+    let content = '';
+    let title = '';
+    
+    switch(category) {
+        case 'news':
+            title = `Breaking: New AI Model Shows Unprecedented Performance in ${topic.replace('#', '')} Tasks`;
+            content = `Just released: A new AI model has demonstrated remarkable capabilities in ${topic.replace('#', '')}. This could revolutionize how we approach problems in this domain. #AI #Innovation ${topic}`;
+            break;
+        case 'research':
+            title = `Research Breakthrough in ${topic.replace('#', '')} Efficiency`;
+            content = `Exciting research paper just published showing a 90% improvement in ${topic.replace('#', '')} efficiency. The implications for the field are enormous. #AIResearch ${topic}`;
+            break;
+        case 'business':
+            title = `Major Investment in ${topic.replace('#', '')} Startups`;
+            content = `VC funding for ${topic.replace('#', '')} startups reached record levels this quarter. Several unicorns emerging in this space. #AIBusiness #Investment ${topic}`;
+            break;
+        case 'industry':
+            title = `${topic.replace('#', '')} Transforming Manufacturing Sector`;
+            content = `Companies implementing ${topic.replace('#', '')} are reporting 40%+ efficiency gains. This is changing how entire industries operate. #Industry40 #Innovation ${topic}`;
+            break;
+        case 'trending':
+            title = `${topic.replace('#', '')} Discussions Trending Today`;
+            content = `Everyone's talking about ${topic.replace('#', '')} today after the latest developments. Join the conversation! #TechTrends ${topic}`;
+            break;
+    }
+    
+    // Add some randomness to the timestamps
+    const hours = Math.floor(Math.random() * 24);
+    const timestamp = hours === 0 ? 'Just now' : hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+    
+    return {
+        title: title,
+        description: content.substring(0, 100) + '...',
+        category: category,
+        source: { name: user.username },
+        publishedAt: new Date(Date.now() - hours * 3600000).toISOString(),
+        urlToImage: `https://picsum.photos/seed/${category}${index}/800/400`,
+        url: `https://twitter.com/${user.handle.substring(1)}/status/${Date.now() - index}`,
+        content: content,
+        user: user,
+        timestamp: timestamp,
+        likes: Math.floor(Math.random() * 1000) + 100,
+        retweets: Math.floor(Math.random() * 500) + 50,
+        replies: Math.floor(Math.random() * 100) + 10
+    };
+}
+
 
 
 // Function to create news cards
@@ -357,15 +415,14 @@ async function createNewsCards(category = 'news') {
 }
 
 function createNewsCard(article, index) {
-    // Handle differences between NewsAPI format and our sample data format
-    const imageUrl = article.urlToImage || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
-    const sourceName = article.source?.name || article.source || 'Unknown Source';
+    // Handle differences between X post format and our display format
+    const imageUrl = article.urlToImage;
+    const sourceName = article.source?.name || article.user?.username || 'X User';
     
     // Create freshness badge with relative time
-    const freshnessBadge = `<span class="freshness-badge">${formatDate(article.publishedAt)}</span>`;
+    const freshnessBadge = `<span class="freshness-badge">${article.timestamp || formatDate(article.publishedAt)}</span>`;
     
-    // Generate summary content and X conversations
-    const summaryContent = generateSummaryContent(article);
+    // Generate X conversations
     const xPosts = getXPostsForArticle(article);
     
     return `
@@ -385,18 +442,10 @@ function createNewsCard(article, index) {
                     <div class="full-article">
                         <div class="content-tabs">
                             <div class="tab-buttons">
-                                <button class="tab-btn active" onclick="showTab(${index}, 'summary')">Full Article</button>
-                                <button class="tab-btn" onclick="showTab(${index}, 'x')">X Discussions</button>
+                                <button class="tab-btn active" onclick="showTab(${index}, 'x')">X Discussions</button>
                             </div>
                             
-                            <div class="tab-content active" id="tab-${index}-summary">
-                                <h4>Full Article</h4>
-                                <div class="article-summary">
-                                    ${summaryContent}
-                                </div>
-                            </div>
-                            
-                            <div class="tab-content" id="tab-${index}-x">
+                            <div class="tab-content active" id="tab-${index}-x">
                                 <h4>X (Twitter) Discussions</h4>
                                 <div class="x-feed">
                                     ${xPosts}
@@ -407,14 +456,14 @@ function createNewsCard(article, index) {
                 </div>
                 
                 <div class="card-footer">
-                   <small>Published: ${formatDate(article.publishedAt)}</small>
+                   <small>Posted: ${article.timestamp || formatDate(article.publishedAt)}</small>
                    <button id="btn-${index}" onclick="toggleArticle(${index})">Read More</button>
                 </div>
-
             </div>
         </article>
     `;
 }
+
 
 
 // Function to format date
