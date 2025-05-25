@@ -372,14 +372,34 @@ function getRandomLocation() {
 // Function to fetch news from pre-fetched data, API, or fallback to sample data
 async function fetchNews(category = 'news') {
     try {
-        // Always use category-specific sample data for now to ensure something displays
-        console.log(`Using sample data for ${category}`);
+        // Try to load the pre-fetched news data from news-data.js
+        try {
+            const response = await fetch('./news-data.js');
+            if (response.ok) {
+                const text = await response.text();
+                // Extract the JSON data from the JavaScript file
+                const jsonStr = text.split('const newsData = ')[1].split('export default')[0].trim().replace(/;$/, '');
+                const data = JSON.parse(jsonStr);
+                
+                // Use the data for the requested category
+                if (data && data[category] && data[category].length > 0) {
+                    console.log(`Using pre-fetched ${category} news data`);
+                    return data[category];
+                }
+            }
+        } catch (err) {
+            console.error('Error loading pre-fetched news data:', err);
+        }
+        
+        // If pre-fetched data failed, use category-specific sample data
+        console.log(`Falling back to sample data for ${category}`);
         return categoryData[category] || categoryData.news;
     } catch (error) {
         console.error('Error fetching news:', error);
         return categoryData[category] || categoryData.news;
     }
 }
+
 
 // Function to create news cards
 async function createNewsCards(category = 'news') {
