@@ -369,7 +369,7 @@ async function createNewsCards(category = 'news') {
     }
 }
 
-// Function to create a single news card
+ // Function to create a single news card
 function createNewsCard(article, index) {
     // Handle differences between NewsAPI format and our sample data format
     const imageUrl = article.urlToImage || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
@@ -379,10 +379,9 @@ function createNewsCard(article, index) {
     // Create freshness badge with relative time
     const freshnessBadge = `<span class="freshness-badge">${formatDate(article.publishedAt)}</span>`;
     
-    // Generate summary content, X conversations, and citations
+    // Generate summary content and X conversations
     const summaryContent = generateSummaryContent(article);
     const xPosts = getXPostsForArticle(article);
-    const citations = generateCitations(article);
     
     return `
         <article class="card">
@@ -403,8 +402,6 @@ function createNewsCard(article, index) {
                             <div class="tab-buttons">
                                 <button class="tab-btn active" onclick="showTab(${index}, 'summary')">Summary</button>
                                 <button class="tab-btn" onclick="showTab(${index}, 'x')">X Discussions</button>
-                                <button class="tab-btn" onclick="showTab(${index}, 'citations')">Sources</button>
-                                <button class="tab-btn" onclick="showTab(${index}, 'source')">Original</button>
                             </div>
                             
                             <div class="tab-content active" id="tab-${index}-summary">
@@ -420,22 +417,6 @@ function createNewsCard(article, index) {
                                     ${xPosts}
                                 </div>
                             </div>
-                            
-                            <div class="tab-content" id="tab-${index}-citations">
-                                <h4>Sources & Citations</h4>
-                                <div class="citations-section">
-                                    <p>This article draws on information from the following sources:</p>
-                                    <ul class="citations-list">
-                                        ${citations}
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="tab-content" id="tab-${index}-source">
-                                <h4>Original Source</h4>
-                                <p>This article was published by <strong>${sourceName}</strong> on ${formatDate(article.publishedAt)}</p>
-                                <p class="source-link"><a href="${articleUrl}" target="_blank" rel="noopener">Read the original article</a></p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -448,6 +429,7 @@ function createNewsCard(article, index) {
         </article>
     `;
 }
+
 
 // Function to format date
 function formatDate(dateString) {
