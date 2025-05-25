@@ -1,0 +1,77 @@
+/* Dynamic background styles */
+.dynamic-backgrounds {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.dynamic-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 1.5s ease-in-out;
+    filter: blur(5px);
+}
+
+.dynamic-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85); /* Darker overlay */
+}
+
+/* Remove the original static background */
+body {
+    background: transparent;
+}
+
+/* Remove the original video background */
+.video-background {
+    display: none;
+}
+
+/* Enhance card visibility */
+.card {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(0) !important;
+    background: rgba(30, 30, 40, 0.8) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    transform: translateZ(0);
+}
+
+.card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4) !important;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+/* Enhance container for better focus */
+.container {
+    position: relative;
+    z-index: 10;
+}
+
+/* Add subtle glow to main header */
+.main-header {
+    position: relative;
+    z-index: 5;
+    box-shadow: 0 4px 30px rgba(99, 102, 241, 0.2);
+}
+
+/* Make navigation more prominent */
+.main-nav {
+    background: rgba(10, 10, 15, 0.9) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+}

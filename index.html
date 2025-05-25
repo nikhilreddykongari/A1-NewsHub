@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI News Hub</title>
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EXAMPLE"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-52G2J3WJXD"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-EXAMPLE');
+      gtag('config', 'G-52G2J3WJXD');
     </script>
-    <!-- Replace G-EXAMPLE with your actual Google Analytics ID when you have one -->
     <style>
         * {
             margin: 0;
@@ -807,7 +806,7 @@
         <div class="header-content">
             <h1>AI News Hub</h1>
             <p class="tagline">Your source for the latest in artificial intelligence</p>
-            <div class="update-info">
+            <div class="update-info" style="display: none;">
                 <span>Last updated: <span id="last-updated"></span></span>
                 <span class="countdown-container">Next refresh in: <span id="refresh-countdown">5:00</span></span>
                 <button id="update-button" onclick="createNewsCards(); updateLastUpdatedTime();" title="Check for new content">
@@ -898,8 +897,10 @@
         <p>&copy; 2024 AI News Hub. All rights reserved.</p>
     </footer>
     
-    <!-- Load the JavaScript file -->
+    <!-- Load CSS and JavaScript files -->
+    <link rel="stylesheet" href="background.css">
     <script src="script.js"></script>
+    <script src="background.js"></script>
 
     <script>
         // Function to format date

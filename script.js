@@ -54,18 +54,32 @@ const sampleAiNewsData = [
 // Function to fetch news from NewsAPI
 async function fetchNews(category = 'ai') {
     try {
+        // Get current date and date from 30 days ago (NewsAPI free tier limitation)
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+        
+        // Format dates for API
+        const fromDate = thirtyDaysAgo.toISOString().split('T')[0];
+        const toDate = today.toISOString().split('T')[0];
+        
         const query = category === 'trending' ? 'artificial intelligence' : `artificial intelligence ${category}`;
-        const url = `${NEWS_API_ENDPOINT}?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${NEWS_API_KEY}`;
+        const url = `${NEWS_API_ENDPOINT}?q=${encodeURIComponent(query)}&from=${fromDate}&to=${toDate}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${NEWS_API_KEY}`;
         
         const response = await fetch(url);
         const data = await response.json();
         
         if (data.status === 'ok' && data.articles && data.articles.length > 0) {
-            // Add category to each article
+            // Add category to each article and ensure dates are valid
             return data.articles.map((article, index) => {
                 // Assign a default image if none exists
                 if (!article.urlToImage) {
                     article.urlToImage = DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
+                }
+                
+                // Ensure publishedAt is valid, or use current date
+                if (!article.publishedAt || isNaN(new Date(article.publishedAt).getTime())) {
+                    article.publishedAt = new Date().toISOString();
                 }
                 
                 // Assign a category based on the current filter
@@ -75,21 +89,86 @@ async function fetchNews(category = 'ai') {
             });
         } else {
             console.error('Error fetching news or no articles returned:', data);
-            return sampleAiNewsData;
+            // Update sample data with current dates
+            return updateSampleDataDates();
         }
     } catch (error) {
         console.error('Error fetching news:', error);
-        return sampleAiNewsData;
+        // Update sample data with current dates
+        return updateSampleDataDates();
     }
 }
 
 // Global variable to store current news data
 let currentNewsData = [];
 
+// Function to update sample data with current dates
+function updateSampleDataDates() {
+    const now = new Date();
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const twoDaysAgo = new Date(now);
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    const threeDaysAgo = new Date(now);
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    
+    return sampleAiNewsData.map((article, index) => {
+        // Assign recent dates based on index
+        switch(index) {
+            case 0:
+                article.publishedAt = now.toISOString();
+                break;
+            case 1:
+                article.publishedAt = yesterday.toISOString();
+                break;
+            case 2:
+                article.publishedAt = twoDaysAgo.toISOString();
+                break;
+            default:
+                article.publishedAt = threeDaysAgo.toISOString();
+        }
+        return article;
+    });
+}
+
 // Function to format date
 function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    try {
+        const date = new Date(dateString);
+        
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+            return "Recently";
+        }
+        
+        // Calculate time difference
+        const now = new Date();
+        const diffMs = now - date;
+        const diffSecs = Math.floor(diffMs / 1000);
+        const diffMins = Math.floor(diffSecs / 60);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+        
+        // Format relative time for recent dates
+        if (diffDays === 0) {
+            if (diffHours === 0) {
+                if (diffMins === 0) {
+                    return "Just now";
+                }
+                return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+            }
+            return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        } else if (diffDays < 7) {
+            return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        }
+        
+        // Use full date for older content
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString(undefined, options);
+    } catch (e) {
+        console.error("Date formatting error:", e);
+        return "Recently";
+    }
 }
 
 // Function to create news cards
@@ -123,13 +202,16 @@ function createNewsCard(article, index) {
     const imageUrl = article.urlToImage || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
     const sourceName = article.source?.name || article.source || 'Unknown Source';
     
+    // Create freshness badge with relative time
+    const freshnessBadge = `<span class="freshness-badge">${formatDate(article.publishedAt)}</span>`;
+    
     return `
         <article class="card">
             <div class="card-video" style="background-image: url('${imageUrl}')">
                 <div class="card-overlay">
                     <div class="card-category-tag">${article.category || 'news'}</div>
                 </div>
-                ${article.lastUpdated ? `<span class="freshness-badge">${article.lastUpdated}</span>` : ''}
+                ${freshnessBadge}
             </div>
             <div class="card-content">
                 <div class="source-tag">${sourceName}</div>
