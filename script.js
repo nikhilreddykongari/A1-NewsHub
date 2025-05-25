@@ -1,43 +1,90 @@
-// Sample AI news data
-const aiNewsData = [
+// NewsAPI configuration
+const NEWS_API_KEY = '05b556a20afa40b7947c78b4bc787a7b'; // Replace with your actual NewsAPI key
+const NEWS_API_ENDPOINT = 'https://newsapi.org/v2/everything';
+
+// Default image URLs for articles without images
+const DEFAULT_IMAGES = [
+    "https://images.unsplash.com/photo-1677442135136-760c813029fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+];
+
+// Fallback to sample data if API fails
+const sampleAiNewsData = [
     {
         title: "OpenAI Releases GPT-5 with Enhanced Reasoning Capabilities",
         description: "The latest large language model shows significant improvements in logical reasoning and mathematical problem-solving.",
         category: "research",
-        source: "AI Research Today",
+        source: { name: "AI Research Today" },
         publishedAt: "2024-05-15T09:30:00Z",
-        imageUrl: "https://images.unsplash.com/photo-1677442135136-760c813029fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+        urlToImage: "https://images.unsplash.com/photo-1677442135136-760c813029fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
         url: "#"
     },
     {
         title: "AI Regulation Framework Proposed by International Coalition",
         description: "A group of 24 countries has proposed a unified framework for regulating artificial intelligence development and deployment.",
         category: "policy",
-        source: "Global Tech Policy",
+        source: { name: "Global Tech Policy" },
         publishedAt: "2024-05-14T14:20:00Z",
-        imageUrl: "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+        urlToImage: "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
         url: "#"
     },
     {
         title: "Healthcare AI System Achieves 95% Accuracy in Early Cancer Detection",
         description: "A new AI diagnostic tool has demonstrated remarkable accuracy in detecting early-stage cancers from standard medical imaging.",
         category: "healthcare",
-        source: "Medical AI Journal",
+        source: { name: "Medical AI Journal" },
         publishedAt: "2024-05-13T11:45:00Z",
-        imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+        urlToImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
         url: "#"
     },
     {
         title: "Autonomous Vehicles Reach New Milestone in Urban Testing",
         description: "Self-driving cars have completed over 1 million miles in complex urban environments with zero accidents.",
         category: "industry",
-        source: "Automotive Tech",
+        source: { name: "Automotive Tech" },
         publishedAt: "2024-05-12T08:15:00Z",
-        imageUrl: "https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+        urlToImage: "https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
         url: "#",
         videoId: "8V20HkoLIqc"
     }
 ];
+
+// Function to fetch news from NewsAPI
+async function fetchNews(category = 'ai') {
+    try {
+        const query = category === 'trending' ? 'artificial intelligence' : `artificial intelligence ${category}`;
+        const url = `${NEWS_API_ENDPOINT}?q=${encodeURIComponent(query)}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${NEWS_API_KEY}`;
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.status === 'ok' && data.articles && data.articles.length > 0) {
+            // Add category to each article
+            return data.articles.map((article, index) => {
+                // Assign a default image if none exists
+                if (!article.urlToImage) {
+                    article.urlToImage = DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
+                }
+                
+                // Assign a category based on the current filter
+                article.category = category;
+                
+                return article;
+            });
+        } else {
+            console.error('Error fetching news or no articles returned:', data);
+            return sampleAiNewsData;
+        }
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        return sampleAiNewsData;
+    }
+}
+
+// Global variable to store current news data
+let currentNewsData = [];
 
 // Function to format date
 function formatDate(dateString) {
@@ -46,33 +93,48 @@ function formatDate(dateString) {
 }
 
 // Function to create news cards
-function createNewsCards() {
+async function createNewsCards(category = 'news') {
     const gridContainer = document.querySelector('.grid');
     
-    // Clear existing content
-    gridContainer.innerHTML = '';
+    // Show loading state
+    gridContainer.innerHTML = '<div class="loading">Loading latest AI news...</div>';
     
-    // Add news cards
-    aiNewsData.forEach((article, index) => {
-        const card = createNewsCard(article, index);
-        gridContainer.innerHTML += card;
-    });
+    try {
+        // Fetch news data
+        currentNewsData = await fetchNews(category);
+        
+        // Clear existing content
+        gridContainer.innerHTML = '';
+        
+        // Add news cards
+        currentNewsData.forEach((article, index) => {
+            const card = createNewsCard(article, index);
+            gridContainer.innerHTML += card;
+        });
+    } catch (error) {
+        console.error('Error creating news cards:', error);
+        gridContainer.innerHTML = '<div class="error">Failed to load news. Please try again later.</div>';
+    }
 }
 
 // Function to create a single news card
 function createNewsCard(article, index) {
+    // Handle differences between NewsAPI format and our sample data format
+    const imageUrl = article.urlToImage || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
+    const sourceName = article.source?.name || article.source || 'Unknown Source';
+    
     return `
         <article class="card">
-            <div class="card-video" style="background-image: url('${article.imageUrl}')">
+            <div class="card-video" style="background-image: url('${imageUrl}')">
                 <div class="card-overlay">
-                    <div class="card-category-tag">${article.category}</div>
+                    <div class="card-category-tag">${article.category || 'news'}</div>
                 </div>
                 ${article.lastUpdated ? `<span class="freshness-badge">${article.lastUpdated}</span>` : ''}
             </div>
             <div class="card-content">
-                <div class="source-tag">${article.source}</div>
+                <div class="source-tag">${sourceName}</div>
                 <h3>${article.title}</h3>
-                <p>${article.description}</p>
+                <p>${article.description || 'No description available'}</p>
                 
                 <div id="expanded-${index}" class="expanded-content">
                     <div class="full-article">
@@ -182,9 +244,8 @@ function filterContent(category) {
     navLinks.forEach(link => link.classList.remove('active'));
     event.target.classList.add('active');
     
-    // In a real implementation, this would filter the displayed articles
-    // For now, we'll just log the category
-    console.log(`Filtering by category: ${category}`);
+    // Fetch and display news for the selected category
+    createNewsCards(category);
 }
 
 // Social sharing functions
@@ -215,8 +276,26 @@ function updateLastUpdatedTime() {
     }
 }
 
-// Initialize the page
+// Add loading and error styles
 document.addEventListener('DOMContentLoaded', function() {
+    // Add loading and error styles to the head
+    const style = document.createElement('style');
+    style.textContent = `
+        .loading, .error {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .error {
+            color: #ff6b6b;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Initialize the page
     createNewsCards();
     updateLastUpdatedTime();
 });
