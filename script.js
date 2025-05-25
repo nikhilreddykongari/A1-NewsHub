@@ -257,99 +257,29 @@ function generateCitations(article) {
 
 // Function to generate detailed news content for an article
 function generateSummaryContent(article) {
-    const category = article.category || 'news';
-    const title = article.title;
-    const description = article.description;
-    const sourceName = article.source?.name || 'a reputable source';
-    
-    // Generate a detailed news article based on the category
-    let detailedContent = '';
-    const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    const location = getRandomLocation();
-    const expertName = getRandomExpertName();
-    const companyName = getRandomCompanyName();
-    
-    switch(category) {
-        case 'news':
-            detailedContent = `
-                <p class="article-date">${currentDate} | ${location}</p>
-                <h3>${title}</h3>
-                <p class="article-lead"><strong>${description}</strong></p>
-                <p>In a significant development for the artificial intelligence community, ${sourceName} reports that ${description.toLowerCase()}. Industry experts are calling this one of the most important advancements in AI this year.</p>
-                <p>"${title.replace(/\.$/, "")} represents a major step forward in how we think about AI capabilities," said ${expertName}, Chief AI Researcher at ${companyName}. "The implications of this development will be felt across multiple sectors."</p>
-                <p>According to the report, the new technology demonstrates unprecedented performance in real-world testing scenarios, with efficiency gains of up to 40% compared to previous solutions. Early adopters in the technology sector have already begun implementing these advancements into their systems.</p>
-                <p>Market analysts predict that this development could trigger a new wave of investment in AI startups focusing on similar technologies, with potential funding rounds expected to be announced in the coming weeks.</p>
-                <p>The announcement comes at a time when competition in the AI space is intensifying, with major tech companies racing to establish dominance in key areas of artificial intelligence research and application.</p>
-                <p>For more information, visit the original source at ${sourceName}.</p>
-            `;
-            break;
-        case 'research':
-            detailedContent = `
-                <p class="article-date">${currentDate} | ${location}</p>
-                <h3>${title}</h3>
-                <p class="article-lead"><strong>${description}</strong></p>
-                <p>A groundbreaking research paper published by ${sourceName} details how ${description.toLowerCase()}. The research team, led by ${expertName}, has been working on this problem for over three years.</p>
-                <p>The paper outlines a novel approach that combines advanced neural network architectures with innovative training methodologies. In benchmark tests, the new technique outperformed existing methods by a significant margin.</p>
-                <p>"We've been able to overcome several key limitations that have hindered progress in this area," explained ${expertName}. "Our approach reduces computational requirements while maintaining or even improving accuracy."</p>
-                <p>The research has important implications for a wide range of applications, from natural language processing to computer vision and robotics. Several research labs have already begun replicating and building upon these findings.</p>
-                <p>The team has made their code and models available as open-source resources, encouraging collaboration and further advancement in the field. A follow-up paper exploring additional applications is expected to be published later this year.</p>
-                <p>This research was funded in part by grants from the National Science Foundation and ${companyName}.</p>
-            `;
-            break;
-        case 'business':
-            detailedContent = `
-                <p class="article-date">${currentDate} | ${location}</p>
-                <h3>${title}</h3>
-                <p class="article-lead"><strong>${description}</strong></p>
-                <p>In a major business development reported by ${sourceName}, ${description.toLowerCase()}. This move signals growing confidence in the AI sector despite broader economic uncertainties.</p>
-                <p>${companyName} led the latest funding round, which values the company at over $2 billion. "We see enormous potential in AI technologies that can transform traditional industries," said ${expertName}, Managing Partner at ${companyName}.</p>
-                <p>The investment landscape for AI has been particularly robust this year, with total funding already exceeding last year's figures by 30%. Analysts attribute this growth to increasing enterprise adoption of AI solutions and promising results from early implementations.</p>
-                <p>Market research firm Gartner predicts that the global AI market will grow at a compound annual growth rate of 37.3% through 2027, reaching a market value of $407 billion.</p>
-                <p>The companies receiving funding are primarily focused on enterprise AI solutions, particularly those addressing efficiency improvements in healthcare, finance, and manufacturing sectors.</p>
-                <p>"We're seeing a shift from speculative AI investments to funding companies with proven ROI models," noted ${expertName}, an industry analyst at ${sourceName}.</p>
-            `;
-            break;
-        case 'industry':
-            detailedContent = `
-                <p class="article-date">${currentDate} | ${location}</p>
-                <h3>${title}</h3>
-                <p class="article-lead"><strong>${description}</strong></p>
-                <p>${sourceName} reports that ${description.toLowerCase()}, marking a significant milestone in industrial AI adoption. The implementation of these systems has resulted in unprecedented efficiency improvements.</p>
-                <p>"We've seen transformative results since deploying AI across our operations," said ${expertName}, CTO of ${companyName}. "Not only have we improved productivity, but we've also enhanced safety metrics and reduced downtime by 45%."</p>
-                <p>The AI systems being deployed combine computer vision, predictive analytics, and machine learning to optimize various aspects of industrial operations. Real-time monitoring capabilities allow for immediate adjustments to manufacturing processes, while predictive maintenance has significantly reduced equipment failures.</p>
-                <p>Industry analysts note that these implementations represent the beginning of a broader trend. A recent survey by ${sourceName} found that 78% of manufacturing executives plan to significantly increase their AI investments over the next three years.</p>
-                <p>The economic impact of these efficiency gains is substantial, with early adopters reporting average cost savings of 12-18% and productivity improvements of 15-25%.</p>
-                <p>"We're just scratching the surface of what's possible with industrial AI," added ${expertName}. "The next generation of systems will feature even greater autonomy and decision-making capabilities."</p>
-            `;
-            break;
-        case 'trending':
-            detailedContent = `
-                <p class="article-date">${currentDate} | ${location}</p>
-                <h3>${title}</h3>
-                <p class="article-lead"><strong>${description}</strong></p>
-                <p>According to ${sourceName}, ${description.toLowerCase()}, generating significant discussion across social media platforms and tech forums.</p>
-                <p>The hashtag ${title.includes('#') ? title.split(' ')[0] : '#AI' + title.split(' ')[0]} has been used in over 50,000 posts in the last 24 hours, with engagement rates far exceeding typical tech discussions.</p>
-                <p>"We're seeing unprecedented interest in this topic from both technical and non-technical audiences," said ${expertName}, social media analyst at ${companyName}. "The conversation has expanded beyond specialist circles to include broader public interest."</p>
-                <p>Key opinion leaders in the tech space have contributed to the discussion, with notable posts from industry executives and researchers receiving tens of thousands of interactions.</p>
-                <p>The trending topic has also sparked several live discussions and impromptu virtual meetups, with participants from over 30 countries joining to share perspectives and insights.</p>
-                <p>"What's particularly interesting about this trend is how it bridges technical discussions with ethical and societal implications," noted ${expertName}. "We're seeing a more nuanced and multidisciplinary conversation than is typical for tech topics."</p>
-                <p>Industry observers expect the discussion to continue evolving as more organizations and individuals weigh in on the developments.</p>
-            `;
-            break;
-        default:
-            detailedContent = `
-                <p class="article-date">${currentDate} | ${location}</p>
-                <h3>${title}</h3>
-                <p class="article-lead"><strong>${description}</strong></p>
-                <p>${sourceName} reports that ${description.toLowerCase()}, adding to the growing body of developments in artificial intelligence.</p>
-                <p>"This is an interesting development that builds on recent advances in the field," commented ${expertName}, an AI specialist at ${companyName}.</p>
-                <p>The implications of this news extend to multiple sectors, including technology, business, and research communities.</p>
-                <p>Further details are expected to emerge as experts analyze the full impact of this development.</p>
-            `;
+    // Use the actual article content if available
+    if (article.content) {
+        return `
+            <p class="article-date">${new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <h3>${article.title}</h3>
+            <p class="article-lead"><strong>${article.description || ''}</strong></p>
+            <div class="article-content">
+                ${article.content}
+            </div>
+            <p class="article-source">Source: <a href="${article.url}" target="_blank">${article.source?.name || 'Original Source'}</a></p>
+        `;
     }
     
-    return detailedContent;
+    // If no content is available, use the description and add a link to the original article
+    return `
+        <p class="article-date">${new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <h3>${article.title}</h3>
+        <p class="article-lead"><strong>${article.description || ''}</strong></p>
+        <p>This article was published by ${article.source?.name || 'a news source'} on ${new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.</p>
+        <p>To read the full article, please visit the <a href="${article.url}" target="_blank">original source</a>.</p>
+    `;
 }
+
 
 // Helper functions for generating random names and locations
 function getRandomExpertName() {
