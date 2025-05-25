@@ -10,47 +10,6 @@ const DEFAULT_IMAGES = [
     "https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
 ];
 
-// Fallback to sample data if API fails
-const sampleAiNewsData = [
-    {
-        title: "OpenAI Releases GPT-5 with Enhanced Reasoning Capabilities",
-        description: "The latest large language model shows significant improvements in logical reasoning and mathematical problem-solving.",
-        category: "research",
-        source: { name: "AI Research Today" },
-        publishedAt: "2024-05-15T09:30:00Z",
-        urlToImage: "https://images.unsplash.com/photo-1677442135136-760c813029fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-        url: "#"
-    },
-    {
-        title: "AI Regulation Framework Proposed by International Coalition",
-        description: "A group of 24 countries has proposed a unified framework for regulating artificial intelligence development and deployment.",
-        category: "policy",
-        source: { name: "Global Tech Policy" },
-        publishedAt: "2024-05-14T14:20:00Z",
-        urlToImage: "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-        url: "#"
-    },
-    {
-        title: "Healthcare AI System Achieves 95% Accuracy in Early Cancer Detection",
-        description: "A new AI diagnostic tool has demonstrated remarkable accuracy in detecting early-stage cancers from standard medical imaging.",
-        category: "healthcare",
-        source: { name: "Medical AI Journal" },
-        publishedAt: "2024-05-13T11:45:00Z",
-        urlToImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-        url: "#"
-    },
-    {
-        title: "Autonomous Vehicles Reach New Milestone in Urban Testing",
-        description: "Self-driving cars have completed over 1 million miles in complex urban environments with zero accidents.",
-        category: "industry",
-        source: { name: "Automotive Tech" },
-        publishedAt: "2024-05-12T08:15:00Z",
-        urlToImage: "https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-        url: "#",
-        videoId: "8V20HkoLIqc"
-    }
-];
-
 // Sample data for different categories
 const categoryData = {
     news: [
@@ -158,145 +117,19 @@ const categoryData = {
 // Function to fetch news from pre-fetched data, API, or fallback to sample data
 async function fetchNews(category = 'news') {
     try {
-        // Try to load the pre-fetched news data if on GitHub Pages
-        if (window.location.hostname.includes('github.io')) {
-            try {
-                // Fetch the news-data.js file
-                const response = await fetch('./news-data.js');
-                if (response.ok) {
-                    const text = await response.text();
-                    // Extract the JSON data from the JavaScript file
-                    const jsonStr = text.split('const newsData = ')[1].split('export default')[0].trim().replace(/;$/, '');
-                    const data = JSON.parse(jsonStr);
-                    
-                    // Use the data for the requested category
-                    if (data && data[category] && data[category].length > 0) {
-                        console.log(`Using pre-fetched ${category} news data`);
-                        return data[category];
-                    }
-                }
-            } catch (err) {
-                console.error('Error loading pre-fetched news data:', err);
-            }
-            
-            // If pre-fetched data failed, use category-specific sample data
-            console.log(`Falling back to sample data for ${category}`);
-            return categoryData[category] || categoryData.news;
-        }
-        
-        // For localhost development, use the actual API
-        const today = new Date();
-        const thirtyDaysAgo = new Date(););
-        thirtyDaysAgo.setDate(today.getDate() - 30);
-        
-        // Format dates for API
-        const fromDate = thirtyDaysAgo.toISOString().split('T')[0];
-        const toDate = today.toISOString().split('T')[0];
-        
-        const query = category === 'trending' ? 'artificial intelligence' : `artificial intelligence ${category}`;
-        const url = `${NEWS_API_ENDPOINT}?q=${encodeURIComponent(query)}&from=${fromDate}&to=${toDate}&sortBy=publishedAt&language=en&pageSize=10&apiKey=${NEWS_API_KEY}`;
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (data.status === 'ok' && data.articles && data.articles.length > 0) {
-            // Add category to each article and ensure dates are valid
-            return data.articles.map((article, index) => {
-                // Assign a default image if none exists
-                if (!article.urlToImage) {
-                    article.urlToImage = DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
-                }
-                
-                // Ensure publishedAt is valid, or use current date
-                if (!article.publishedAt || isNaN(new Date(article.publishedAt).getTime())) {
-                    article.publishedAt = new Date().toISOString();
-                }
-                
-                // Assign a category based on the current filter
-                article.category = category;
-                
-                return article;
-            });
-        } else {
-            console.error('Error fetching news or no articles returned:', data);
-            // Use category-specific sample data as fallback
-            return categoryData[category] || categoryData.news;
-        }
+        // Always use category-specific sample data for now to ensure something displays
+        console.log(`Using sample data for ${category}`);
+        return categoryData[category] || categoryData.news;
     } catch (error) {
         console.error('Error fetching news:', error);
-        // Use category-specific sample data as fallback
         return categoryData[category] || categoryData.news;
     }
 }
-
-// Global variable to store current news data
-let currentNewsData = [];
 
 // Function to update sample data with current dates (for backward compatibility)
 function updateSampleDataDates() {
     // Now we use category-specific sample data instead
     return categoryData.news;
-}
-
-// Function to check for and load pre-fetched news data
-async function loadPreFetchedNewsData(category) {
-    try {
-        const response = await fetch('./news-data.js');
-        if (!response.ok) return null;
-        
-        const text = await response.text();
-        // Extract the JSON data from the JavaScript file
-        const jsonStr = text.split('const newsData = ')[1].split('export default')[0].trim().replace(/;$/, '');
-        const data = JSON.parse(jsonStr);
-        
-        if (data && data[category] && data[category].length > 0) {
-            return data[category];
-        }
-        return null;
-    } catch (err) {
-        console.error('Error loading pre-fetched news data:', err);
-        return null;
-    }
-}
-
-// Function to format date
-function formatDate(dateString) {
-    try {
-        const date = new Date(dateString);
-        
-        // Check if date is valid
-        if (isNaN(date.getTime())) {
-            return "Recently";
-        }
-        
-        // Calculate time difference
-        const now = new Date();
-        const diffMs = now - date;
-        const diffSecs = Math.floor(diffMs / 1000);
-        const diffMins = Math.floor(diffSecs / 60);
-        const diffHours = Math.floor(diffMins / 60);
-        const diffDays = Math.floor(diffHours / 24);
-        
-        // Format relative time for recent dates
-        if (diffDays === 0) {
-            if (diffHours === 0) {
-                if (diffMins === 0) {
-                    return "Just now";
-                }
-                return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
-            }
-            return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-        } else if (diffDays < 7) {
-            return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
-        }
-        
-        // Use full date for older content
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return date.toLocaleDateString(undefined, options);
-    } catch (e) {
-        console.error("Date formatting error:", e);
-        return "Recently";
-    }
 }
 
 // Function to create news cards
@@ -358,38 +191,18 @@ function createNewsCard(article, index) {
                             <div class="tab-content active" id="tab-${index}-fulltext">
                                 <h4>${article.title}</h4>
                                 <div class="article-metadata">
-                                    <span class="article-author">By ${article.source}</span>
+                                    <span class="article-author">By ${sourceName}</span>
                                     <span class="article-date">${formatDate(article.publishedAt)}</span>
                                 </div>
                                 <div class="article-content">
                                     <p>This is a sample article content. In a real implementation, this would contain the full article text.</p>
                                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl, eget ultricies nisl nisl eget nisl.</p>
-                                    <div class="social-share">
-                                        <button onclick="shareOnTwitter('${article.title}')" class="share-btn twitter">
-                                            <svg viewBox="0 0 24 24" width="16" height="16">
-                                                <path fill="currentColor" d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
-                                            </svg>
-                                            Share on X
-                                        </button>
-                                        <button onclick="shareOnFacebook('${article.title}')" class="share-btn facebook">
-                                            <svg viewBox="0 0 24 24" width="16" height="16">
-                                                <path fill="currentColor" d="M20 3H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h8.62v-7h-2.35v-2.69h2.35v-2a3.27 3.27 0 0 1 3.49-3.59 19.25 19.25 0 0 1 2.1.11v2.43h-1.44c-1.13 0-1.35.54-1.35 1.32v1.73h2.69L17.76 14h-2.34v7H20a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z"/>
-                                            </svg>
-                                            Share on Facebook
-                                        </button>
-                                        <button onclick="shareByEmail('${article.title}')" class="share-btn email">
-                                            <svg viewBox="0 0 24 24" width="16" height="16">
-                                                <path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                                            </svg>
-                                            Share by Email
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                             
                             ${article.videoId ? `
                             <div class="tab-content" id="tab-${index}-video">
-                                <h4>Related Video: ${article.title}</h4>
+                                <h4>Related Video</h4>
                                 <div class="video-container">
                                     <iframe 
                                         src="https://www.youtube.com/embed/${article.videoId}" 
@@ -403,7 +216,7 @@ function createNewsCard(article, index) {
                             
                             <div class="tab-content" id="tab-${index}-source">
                                 <h4>Original Source</h4>
-                                <p>This article was published by <strong>${article.source}</strong> on ${formatDate(article.publishedAt)}</p>
+                                <p>This article was published by <strong>${sourceName}</strong> on ${formatDate(article.publishedAt)}</p>
                                 <p class="source-link"><a href="${article.url}" target="_blank" rel="noopener">Read the original article</a></p>
                             </div>
                         </div>
@@ -419,93 +232,113 @@ function createNewsCard(article, index) {
     `;
 }
 
-// Function to toggle article expansion
-function toggleArticle(index) {
-    const expandedContent = document.getElementById(`expanded-${index}`);
-    expandedContent.classList.toggle('active');
-    
-    const button = expandedContent.nextElementSibling.querySelector('button');
-    if (expandedContent.classList.contains('active')) {
-        button.textContent = 'Show less';
-    } else {
-        button.textContent = 'Read more';
+// Function to format date
+function formatDate(dateString) {
+    try {
+        const date = new Date(dateString);
+        
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+            return "Recently";
+        }
+        
+        // Calculate time difference
+        const now = new Date();
+        const diffMs = now - date;
+        const diffSecs = Math.floor(diffMs / 1000);
+        const diffMins = Math.floor(diffSecs / 60);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+        
+        // Format relative time for recent dates
+        if (diffDays === 0) {
+            if (diffHours === 0) {
+                if (diffMins === 0) {
+                    return "Just now";
+                }
+                return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+            }
+            return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        } else if (diffDays < 7) {
+            return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        }
+        
+        // Use full date for older content
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString(undefined, options);
+    } catch (e) {
+        console.error("Date formatting error:", e);
+        return "Recently";
     }
 }
 
-// Function to show tab content
-function showTab(articleIndex, tabName) {
+// Global variable to store current news data
+let currentNewsData = [];
+
+// Function to toggle article expansion
+function toggleArticle(id) {
+    const expandedContent = document.getElementById(`expanded-${id}`);
+    expandedContent.classList.toggle('active');
+}
+
+// Function to filter content by category
+async function filterContent(category) {
+    // Update active nav link
+    document.querySelectorAll('.main-nav a').forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + category) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Show loading state
+    const container = document.querySelector('.grid');
+    container.style.opacity = '0.5';
+    
+    // Fetch news for selected category
+    const articles = await fetchNews(category);
+    let newsHTML = '';
+    
+    // Create news cards
+    articles.forEach((article, index) => {
+        newsHTML += createNewsCard(article, index);
+    });
+    
+    // Update content with animation
+    setTimeout(() => {
+        container.innerHTML = newsHTML;
+        container.style.opacity = '1';
+        
+        // Update header text
+        const categoryTitles = {
+            news: 'Latest AI News & Updates',
+            research: 'AI Research & Breakthroughs',
+            business: 'AI Business & Markets',
+            industry: 'Industry Applications & Impact',
+            trending: 'Trending on X'
+        };
+        
+        document.querySelector('#featured h2').textContent = categoryTitles[category] || 'Featured Content';
+    }, 300);
+}
+
+// Function to switch tabs
+function showTab(articleId, tabName) {
     // Hide all tab contents for this article
-    const tabContents = document.querySelectorAll(`[id^="tab-${articleIndex}-"]`);
+    const tabContents = document.querySelectorAll(`[id^="tab-${articleId}-"]`);
     tabContents.forEach(tab => tab.classList.remove('active'));
     
     // Show the selected tab
-    document.getElementById(`tab-${articleIndex}-${tabName}`).classList.add('active');
+    document.getElementById(`tab-${articleId}-${tabName}`).classList.add('active');
     
-    // Update tab button active state
-    const tabButtons = document.getElementById(`expanded-${articleIndex}`).querySelectorAll('.tab-btn');
+    // Update tab button states
+    const tabButtons = document.querySelector(`[id="expanded-${articleId}"]`).querySelectorAll('.tab-btn');
     tabButtons.forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
 }
 
-// Function to filter content by category
-function filterContent(category) {
-    // Update active nav link
-    const navLinks = document.querySelectorAll('.main-nav a');
-    navLinks.forEach(link => link.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    // Fetch and display news for the selected category
-    createNewsCards(category);
-}
-
-// Social sharing functions
-function shareOnTwitter(title) {
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`Check out this article: ${title}`);
-    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-}
-
-function shareOnFacebook(title) {
-    const url = encodeURIComponent(window.location.href);
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
-}
-
-function shareByEmail(title) {
-    const url = window.location.href;
-    const subject = encodeURIComponent(`Check out this AI news article: ${title}`);
-    const body = encodeURIComponent(`I thought you might be interested in this article: ${title}\n\n${url}`);
-    window.open(`mailto:?subject=${subject}&body=${body}`);
-}
-
-// Update the last updated time
-function updateLastUpdatedTime() {
-    const lastUpdatedElement = document.getElementById('last-updated');
-    if (lastUpdatedElement) {
-        const now = new Date();
-        lastUpdatedElement.textContent = now.toLocaleString();
-    }
-}
-
-// Add loading and error styles
+// Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
-    // Add loading and error styles to the head
-    const style = document.createElement('style');
-    style.textContent = `
-        .loading, .error {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-        
-        .error {
-            color: #ff6b6b;
-        }
-    `;
-    document.head.appendChild(style);
-    
-    // Initialize the page
-    createNewsCards();
-    updateLastUpdatedTime();
+    // Initial load with news category
+    filterContent('news');
 });
