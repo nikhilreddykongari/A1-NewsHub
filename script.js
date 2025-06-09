@@ -550,57 +550,6 @@ function createNewsCard(article, index) {
 }
 
 
-function createNewsCard(article, index) {
-    // Handle differences between X post format and our display format
-    const imageUrl = article.urlToImage || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
-    const sourceName = article.source?.name || 'X User';
-    
-    // Create freshness badge with relative time
-    const freshnessBadge = `<span class="freshness-badge">${article.timestamp || formatDate(article.publishedAt)}</span>`;
-    
-    // Generate X conversations
-    const xPosts = getXPostsForArticle(article);
-    
-    return `
-        <article class="card">
-            <div class="card-video" style="background-image: url('${imageUrl}')">
-                <div class="card-overlay">
-                    <div class="card-category-tag">${article.category || 'news'}</div>
-                </div>
-                ${freshnessBadge}
-            </div>
-            <div class="card-content">
-                <div class="source-tag">${sourceName}</div>
-                <h3>${article.title}</h3>
-                <p>${article.description || 'No description available'}</p>
-                
-                <div id="expanded-${index}" class="expanded-content">
-                    <div class="full-article">
-                        <div class="content-tabs">
-                            <div class="tab-buttons">
-                                <button class="tab-btn active" onclick="showTab(${index}, 'x')">X Discussions</button>
-                            </div>
-                            
-                            <div class="tab-content active" id="tab-${index}-x">
-                                <h4>X (Twitter) Discussions</h4>
-                                <div class="x-feed">
-                                    ${xPosts}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card-footer">
-                   <small>Posted: ${article.timestamp || formatDate(article.publishedAt)}</small>
-                   <button id="btn-${index}" onclick="toggleArticle(${index})">Read More</button>
-                </div>
-            </div>
-        </article>
-    `;
-}
-
-
 // Function to format date
 function formatDate(dateString) {
     try {
