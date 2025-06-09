@@ -305,12 +305,63 @@ function getRandomLocation() {
 }
 
 
-// Function to fetch news from X discussions
+// Function to fetch news - generates dynamic content client-side
 async function fetchNews(category = 'news') {
-    // Get X posts for the selected category
-    const posts = generateXPostsForCategory(category);
+    // Generate dynamic X posts for the selected category
+    const posts = [];
+    const topics = X_TOPICS[category] || X_TOPICS.news;
+    
+    // Generate 5-8 posts for this category
+    const postCount = 5 + Math.floor(Math.random() * 4);
+    
+    for (let i = 0; i < postCount; i++) {
+        const topic = topics[i % topics.length];
+        const hours = Math.floor(Math.random() * 24);
+        const timestamp = hours === 0 ? 'Just now' : hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+        
+        // Generate title and content based on category and topic
+        let title = '';
+        let content = '';
+        
+        switch(category) {
+            case 'news':
+                title = `Breaking: New AI Model Shows Unprecedented Performance in ${topic.replace('#', '')} Tasks`;
+                content = `Just released: A new AI model has demonstrated remarkable capabilities in ${topic.replace('#', '')}. This could revolutionize how we approach problems in this domain.`;
+                break;
+            case 'research':
+                title = `Research Breakthrough in ${topic.replace('#', '')} Efficiency`;
+                content = `Exciting research paper just published showing a 90% improvement in ${topic.replace('#', '')} efficiency. The implications for the field are enormous.`;
+                break;
+            case 'business':
+                title = `Major Investment in ${topic.replace('#', '')} Startups`;
+                content = `VC funding for ${topic.replace('#', '')} startups reached record levels this quarter. Several unicorns emerging in this space.`;
+                break;
+            case 'industry':
+                title = `${topic.replace('#', '')} Transforming Manufacturing Sector`;
+                content = `Companies implementing ${topic.replace('#', '')} are reporting 40%+ efficiency gains. This is changing how entire industries operate.`;
+                break;
+            case 'trending':
+                title = `${topic.replace('#', '')} Discussions Trending Today`;
+                content = `Everyone's talking about ${topic.replace('#', '')} today after the latest developments. Join the conversation!`;
+                break;
+        }
+        
+        // Create a post with randomized data
+        posts.push({
+            title: title,
+            description: content.substring(0, 100) + '...',
+            category: category,
+            source: { name: ['X Trending', 'AI Daily', 'Tech Insights', 'Future Tech Today', 'AI Research Lab'][Math.floor(Math.random() * 5)] },
+            publishedAt: new Date(Date.now() - hours * 3600000).toISOString(),
+            urlToImage: `https://picsum.photos/seed/${category}${i}/800/400`,
+            url: `https://twitter.com/hashtag/${topic.replace('#', '')}`,
+            timestamp: timestamp
+        });
+    }
+    
     return posts;
 }
+
 // Function to generate X posts for a category
 function generateXPostsForCategory(category) {
     const topics = X_TOPICS[category] || X_TOPICS.news;
@@ -416,8 +467,8 @@ async function createNewsCards(category = 'news') {
 
 function createNewsCard(article, index) {
     // Handle differences between X post format and our display format
-    const imageUrl = article.urlToImage;
-    const sourceName = article.source?.name || article.user?.username || 'X User';
+    const imageUrl = article.urlToImage || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
+    const sourceName = article.source?.name || 'X User';
     
     // Create freshness badge with relative time
     const freshnessBadge = `<span class="freshness-badge">${article.timestamp || formatDate(article.publishedAt)}</span>`;
@@ -463,7 +514,6 @@ function createNewsCard(article, index) {
         </article>
     `;
 }
-
 
 
 // Function to format date
