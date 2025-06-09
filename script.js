@@ -305,62 +305,102 @@ function getRandomLocation() {
 }
 
 
-// Function to fetch news - generates dynamic content client-side
+// Function to fetch news from Hacker News API (no API key required)
 async function fetchNews(category = 'news') {
-    // Generate dynamic X posts for the selected category
-    const posts = [];
-    const topics = X_TOPICS[category] || X_TOPICS.news;
-    
-    // Generate 5-8 posts for this category
-    const postCount = 5 + Math.floor(Math.random() * 4);
-    
-    for (let i = 0; i < postCount; i++) {
-        const topic = topics[i % topics.length];
-        const hours = Math.floor(Math.random() * 24);
-        const timestamp = hours === 0 ? 'Just now' : hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+    try {
+        // Map categories to relevant search terms
+        const searchTerms = {
+            news: 'ai',
+            research: 'machine learning',
+            business: 'ai startup',
+            industry: 'ai industry',
+            trending: 'artificial intelligence'
+        };
         
-        // Generate title and content based on category and topic
-        let title = '';
-        let content = '';
+        // Use Hacker News API to get real news
+        const searchTerm = searchTerms[category] || 'ai';
+        const response = await fetch(`https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(searchTerm)}&tags=story`);
+        const data = await response.json();
         
-        switch(category) {
-            case 'news':
-                title = `Breaking: New AI Model Shows Unprecedented Performance in ${topic.replace('#', '')} Tasks`;
-                content = `Just released: A new AI model has demonstrated remarkable capabilities in ${topic.replace('#', '')}. This could revolutionize how we approach problems in this domain.`;
-                break;
-            case 'research':
-                title = `Research Breakthrough in ${topic.replace('#', '')} Efficiency`;
-                content = `Exciting research paper just published showing a 90% improvement in ${topic.replace('#', '')} efficiency. The implications for the field are enormous.`;
-                break;
-            case 'business':
-                title = `Major Investment in ${topic.replace('#', '')} Startups`;
-                content = `VC funding for ${topic.replace('#', '')} startups reached record levels this quarter. Several unicorns emerging in this space.`;
-                break;
-            case 'industry':
-                title = `${topic.replace('#', '')} Transforming Manufacturing Sector`;
-                content = `Companies implementing ${topic.replace('#', '')} are reporting 40%+ efficiency gains. This is changing how entire industries operate.`;
-                break;
-            case 'trending':
-                title = `${topic.replace('#', '')} Discussions Trending Today`;
-                content = `Everyone's talking about ${topic.replace('#', '')} today after the latest developments. Join the conversation!`;
-                break;
+        if (data && data.hits && data.hits.length > 0) {
+            // Transform the data into our expected format
+            return data.hits.slice(0, 6).map((item, index) => {
+                // Generate random time for freshness
+                const hours = Math.floor(Math.random() * 24);
+                const timestamp = hours === 0 ? 'Just now' : hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+                
+                return {
+                    title: item.title || `Latest ${category} Update`,
+                    description: item.story_text || `Recent developments in ${searchTerm} technology and applications.`,
+                    category: category,
+                    source: { name: item.author || 'X User' },
+                    publishedAt: new Date(item.created_at || Date.now()).toISOString(),
+                    urlToImage: `https://picsum.photos/seed/${category}${index}/800/400`,
+                    url: item.url || `https://twitter.com/hashtag/${searchTerm.replace(' ', '')}`,
+                    timestamp: timestamp
+                };
+            });
         }
         
-        // Create a post with randomized data
-        posts.push({
-            title: title,
-            description: content.substring(0, 100) + '...',
-            category: category,
-            source: { name: ['X Trending', 'AI Daily', 'Tech Insights', 'Future Tech Today', 'AI Research Lab'][Math.floor(Math.random() * 5)] },
-            publishedAt: new Date(Date.now() - hours * 3600000).toISOString(),
-            urlToImage: `https://picsum.photos/seed/${category}${i}/800/400`,
-            url: `https://twitter.com/hashtag/${topic.replace('#', '')}`,
-            timestamp: timestamp
-        });
+        throw new Error('No results found');
+    } catch (error) {
+        console.error('Error fetching news:', error);
+        
+        // Fallback to generating dynamic content
+        const topics = X_TOPICS[category] || X_TOPICS.news;
+        const posts = [];
+        
+        // Generate 5-8 posts for this category
+        const postCount = 5 + Math.floor(Math.random() * 4);
+        
+        for (let i = 0; i < postCount; i++) {
+            const topic = topics[i % topics.length];
+            const hours = Math.floor(Math.random() * 24);
+            const timestamp = hours === 0 ? 'Just now' : hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+            
+            // Generate title and content based on category and topic
+            let title = '';
+            let content = '';
+            
+            switch(category) {
+                case 'news':
+                    title = `Breaking: New AI Model Shows Unprecedented Performance in ${topic.replace('#', '')} Tasks`;
+                    content = `Just released: A new AI model has demonstrated remarkable capabilities in ${topic.replace('#', '')}. This could revolutionize how we approach problems in this domain.`;
+                    break;
+                case 'research':
+                    title = `Research Breakthrough in ${topic.replace('#', '')} Efficiency`;
+                    content = `Exciting research paper just published showing a 90% improvement in ${topic.replace('#', '')} efficiency. The implications for the field are enormous.`;
+                    break;
+                case 'business':
+                    title = `Major Investment in ${topic.replace('#', '')} Startups`;
+                    content = `VC funding for ${topic.replace('#', '')} startups reached record levels this quarter. Several unicorns emerging in this space.`;
+                    break;
+                case 'industry':
+                    title = `${topic.replace('#', '')} Transforming Manufacturing Sector`;
+                    content = `Companies implementing ${topic.replace('#', '')} are reporting 40%+ efficiency gains. This is changing how entire industries operate.`;
+                    break;
+                case 'trending':
+                    title = `${topic.replace('#', '')} Discussions Trending Today`;
+                    content = `Everyone's talking about ${topic.replace('#', '')} today after the latest developments. Join the conversation!`;
+                    break;
+            }
+            
+            posts.push({
+                title: title,
+                description: content.substring(0, 100) + '...',
+                category: category,
+                source: { name: ['X Trending', 'AI Daily', 'Tech Insights', 'Future Tech Today', 'AI Research Lab'][Math.floor(Math.random() * 5)] },
+                publishedAt: new Date(Date.now() - hours * 3600000).toISOString(),
+                urlToImage: `https://picsum.photos/seed/${category}${i}/800/400`,
+                url: `https://twitter.com/hashtag/${topic.replace('#', '')}`,
+                timestamp: timestamp
+            });
+        }
+        
+        return posts;
     }
-    
-    return posts;
 }
+
 
 // Function to generate X posts for a category
 function generateXPostsForCategory(category) {
