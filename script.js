@@ -324,22 +324,25 @@ async function fetchNews(category = 'news') {
         
         if (data && data.hits && data.hits.length > 0) {
             // Transform the data into our expected format
-            return data.hits.slice(0, 6).map((item, index) => {
-                // Generate random time for freshness
-                const hours = Math.floor(Math.random() * 24);
-                const timestamp = hours === 0 ? 'Just now' : hours === 1 ? '1 hour ago' : `${hours} hours ago`;
-                
-                return {
-                    title: item.title || `Latest ${category} Update`,
-                    description: item.story_text || `Recent developments in ${searchTerm} technology and applications.`,
-                    category: category,
-                    source: { name: item.author || 'X User' },
-                    publishedAt: new Date(item.created_at || Date.now()).toISOString(),
-                    urlToImage: `https://picsum.photos/seed/${category}${index}/800/400`,
-                    url: item.url || `https://twitter.com/hashtag/${searchTerm.replace(' ', '')}`,
-                    timestamp: timestamp
-                };
-            });
+            // In your fetchNews function, modify the return statement in the API success case:
+         return data.hits.slice(0, 6).map((item, index) => {
+         // Generate random time for freshness
+         const hours = Math.floor(Math.random() * 24);
+         const timestamp = hours === 0 ? 'Just now' : hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+    
+          return {
+         title: item.title || `Latest ${category} Update`,
+         description: item.story_text?.substring(0, 150) || `Recent developments in ${searchTerm} technology and applications.`,
+         story_text: item.story_text, // Include the full story text
+         category: category,
+         source: { name: item.author || 'X User' },
+         publishedAt: new Date(item.created_at || Date.now()).toISOString(),
+         urlToImage: `https://picsum.photos/seed/${category}${index}/800/400`,
+         url: item.url || `https://twitter.com/hashtag/${searchTerm.replace(' ', '')}`,
+         timestamp: timestamp
+              };
+        });
+
         }
         
         throw new Error('No results found');
@@ -480,30 +483,72 @@ function generateXPost(category, topic, index) {
 
 
 
-// Function to create news cards
-async function createNewsCards(category = 'news') {
-    const gridContainer = document.querySelector('.grid');
+function createNewsCard(article, index) {
+    // Handle differences between X post format and our display format
+    const imageUrl = article.urlToImage || DEFAULT_IMAGES[index % DEFAULT_IMAGES.length];
+    const sourceName = article.source?.name || 'X User';
     
-    // Show loading state
-    gridContainer.innerHTML = '<div class="loading">Loading latest AI news...</div>';
+    // Create freshness badge with relative time
+    const freshnessBadge = `<span class="freshness-badge">${article.timestamp || formatDate(article.publishedAt)}</span>`;
     
-    try {
-        // Fetch news data
-        currentNewsData = await fetchNews(category);
-        
-        // Clear existing content
-        gridContainer.innerHTML = '';
-        
-        // Add news cards
-        currentNewsData.forEach((article, index) => {
-            const card = createNewsCard(article, index);
-            gridContainer.innerHTML += card;
-        });
-    } catch (error) {
-        console.error('Error creating news cards:', error);
-        gridContainer.innerHTML = '<div class="error">Failed to load news. Please try again later.</div>';
-    }
+    // Generate X conversations
+    const xPosts = getXPostsForArticle(article);
+    
+    // Create content for the full article view
+    const fullArticleContent = `
+        <p class="article-date">${article.timestamp || formatDate(article.publishedAt)}</p>
+        <h3>${article.title}</h3>
+        <p class="article-lead"><strong>${article.description}</strong></p>
+        ${article.story_text ? `<div class="article-full-text">${article.story_text}</div>` : ''}
+        <p class="article-source">Source: <a href="${article.url}" target="_blank">${sourceName}</a></p>
+    `;
+    
+    return `
+        <article class="card">
+            <div class="card-video" style="background-image: url('${imageUrl}')">
+                <div class="card-overlay">
+                    <div class="card-category-tag">${article.category || 'news'}</div>
+                </div>
+                ${freshnessBadge}
+            </div>
+            <div class="card-content">
+                <div class="source-tag">${sourceName}</div>
+                <h3>${article.title}</h3>
+                <p>${article.description || 'No description available'}</p>
+                
+                <div id="expanded-${index}" class="expanded-content">
+                    <div class="full-article">
+                        <div class="content-tabs">
+                            <div class="tab-buttons">
+                                <button class="tab-btn active" onclick="showTab(${index}, 'article')">Full Article</button>
+                                <button class="tab-btn" onclick="showTab(${index}, 'x')">X Discussions</button>
+                            </div>
+                            
+                            <div class="tab-content active" id="tab-${index}-article">
+                                <div class="article-summary">
+                                    ${fullArticleContent}
+                                </div>
+                            </div>
+                            
+                            <div class="tab-content" id="tab-${index}-x">
+                                <h4>X (Twitter) Discussions</h4>
+                                <div class="x-feed">
+                                    ${xPosts}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                   <small>Posted: ${article.timestamp || formatDate(article.publishedAt)}</small>
+                   <button id="btn-${index}" onclick="toggleArticle(${index})">Read More</button>
+                </div>
+            </div>
+        </article>
+    `;
 }
+
 
 function createNewsCard(article, index) {
     // Handle differences between X post format and our display format
